@@ -88,40 +88,43 @@ void startCamera(){
     }
 }
 
+void blink(int pin_num, int dark_time, int light_time){
+    delay(dark_time);
+    digitalWrite(pin_num, HIGH);
+    delay(light_time);
+    digitalWrite(pin_num, LOW);
+}
 
 void setup()
 {
     Serial.begin(115200);
     pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, HIGH);
-    delay(200);
-    digitalWrite(LED_PIN, LOW);
+    blink(LED_PIN, 0, 200);
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     if(WiFi.waitForConnectResult() != WL_CONNECTED){
         Serial.println("WiFi Failed");
         while (1){
-            digitalWrite(LED_PIN, HIGH);
-            delay(200);
-            digitalWrite(LED_PIN, LOW);
-            delay(200);
+            blink(LED_PIN, 200, 200);
         }
     }
     Serial.println("WiFi Connected");
+    for(int i=0; i<2; i++){
+        blink(LED_PIN, 200, 200);
+    }
     startCamera();
-    digitalWrite(LED_PIN, HIGH);
-    delay(200);
-    digitalWrite(LED_PIN, LOW);
-    delay(200);
+    for(int i=0; i<3; i++){
+        blink(LED_PIN, 100, 100);
+    }
 }
 
 void loop()
 {
     if(!udp.connected()){
         udp.connect(serverIP, serverPort);
-        digitalWrite(LED_PIN, HIGH);
-        delay(200);
-        digitalWrite(LED_PIN, LOW);
+        for(int i=0; i<1; i++){
+            blink(LED_PIN, 200, 100);
+        }
         delay(1000); 
     }else{
         // Serial.println("udp connected!");
@@ -135,9 +138,7 @@ void loop()
         fb = esp_camera_fb_get();
         if(!fb){
             Serial.println("cam read fail!");
-            digitalWrite(LED_PIN, HIGH);
-            delay(200);
-            digitalWrite(LED_PIN, LOW);
+            blink(LED_PIN, 200, 1000);
         }else{
             uint8_t *P_temp = fb->buf;//暂存指针初始位置
             int pic_length = fb->len;//获取图片字节数量
