@@ -10,7 +10,10 @@ import queue
 import time
 
 
-HOST, PORT = "192.168.1.105", 1234
+HOST, PORT = socket.gethostbyname(socket.gethostname()), 1234
+RECT    = None
+RECT_DRAWING = False
+
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -26,13 +29,16 @@ server_socket.bind(address)
 
 def render(img_bytes):
     """渲染图像"""
-    global display
+    global display, size
     picture_stream = io.BytesIO(img_bytes)
     img = pygame.image.load(picture_stream, ".JPEG")
     if img.get_size() != size:
-        display = pygame.display.set_mode(img.get_size())
+        size = img.get_size()
+        display = pygame.display.set_mode(size)
     display.blit(img, (0,0))
     clock.tick()
+    if RECT is not None:
+        pygame.draw.rect(display, "red", RECT, 10)
     pygame.display.flip()
     pygame.display.set_caption(f"FPS: {clock.get_fps():.3}")
 
@@ -68,7 +74,7 @@ def stop_block():
 
 
 def main():
-    global Que, thread_running
+    global Que, thread_running, RECT, RECT_DRAWING
     upd_task = threading.Thread(target=upd_handler)
     upd_task.start()
     time_cnt = time.time()
@@ -89,6 +95,20 @@ def main():
                 stop_block()
                 upd_task.join()
                 exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                RECT_DRAWING = True
+                RECT = [event.pos[0], event.pos[1], 0, 0]
+            elif event.type == pygame.MOUSEMOTION:
+                if RECT_DRAWING:
+                    w = RECT[0] - event.pos[0]
+                    h = RECT[1] - event.pos[1]
+                    RECT[0] = event.pos[0] if w > 0 else RECT[0]
+                    RECT[1] = event.pos[1] if h > 0 else RECT[1]
+                    RECT = [RECT[0], RECT[1], abs(w), abs(h)]
+            elif event.type == pygame.MOUSEBUTTONUP:
+                RECT_DRAWING = False
+
+
 
 if __name__ == "__main__":
     main()
