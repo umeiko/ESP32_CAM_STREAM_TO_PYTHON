@@ -1,16 +1,18 @@
+import io
+import queue
 import socket
 import threading
-import pygame
-import pygame.image
-import pygame.display
-import pygame.event
-import io
-import pygame.time
-import queue
 import time
 
+import pygame
+import pygame.display
+import pygame.event
+import pygame.image
+import pygame.time
 
 HOST, PORT = socket.gethostbyname(socket.gethostname()), 1234
+# HOST, PORT = "192.168.1.116", 1234
+
 RECT    = None
 RECT_DRAWING = False
 
@@ -22,6 +24,9 @@ size = (500, 500)
 display = pygame.display.set_mode(size)
 imgbuffer = b""
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+
 thread_running = True
 address = (HOST, PORT)
 server_socket.bind(address)
@@ -52,7 +57,7 @@ def upd_handler():
     """处理Upd连接"""
     global imgbuffer, Que, thread_running
     while thread_running:
-        data, _ = server_socket.recvfrom(500*1024)#接受数据
+        data, _ = server_socket.recvfrom(500*1024, )#接受数据
         if data[-1]!=0xFF:#0xFF代表一张图片的数据发送结束
             imgbuffer += data[:-1]
         else:
@@ -107,7 +112,6 @@ def main():
                     RECT = [RECT[0], RECT[1], abs(w), abs(h)]
             elif event.type == pygame.MOUSEBUTTONUP:
                 RECT_DRAWING = False
-
 
 
 if __name__ == "__main__":
