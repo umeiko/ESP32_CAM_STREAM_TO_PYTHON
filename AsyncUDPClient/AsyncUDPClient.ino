@@ -165,26 +165,33 @@ void setup()
 void get_ip_from_c_str(uint8_t* data, uint8_t len){
     char cstr[len+1];
     memcpy(cstr, (char*)data, len);
-    int start = 0;
+    int start_ = 0;
     uint8_t nums[4];  // 定义一个整型数组来存储转换后的数字
     uint8_t count = 0;  // 记录数字的个数
     for (int i = 0; i < len; i++) {
-        if (cstr[i] == ' ') {
-            // 如果当前字符是空格，则表示单词结束
+        if (cstr[i] == '.') {
+            // 如果当前字符是.，则表示单词结束
             // 将单词转换为整数并存储到数组中
-            char word[i - start + 1];  // 定义一个临时字符数组来存储单词
-            for (int j = start; j < i; j++) {
-            word[j - start] = cstr[j];
+            char word[i - start_ + 1];  // 定义一个临时字符数组来存储单词
+            for (int j = start_; j < i; j++) {
+            word[j - start_] = cstr[j];
             }
-            word[i - start] = '\0';  // 字符串结尾标志
+            word[i - start_] = '\0';  // 字符串结尾标志
             nums[count] = atoi(word);  // 将字符串转换为整数
             count++;  // 更新数字个数
-            start = i + 1;  // 更新单词的开始索引
+            start_ = i + 1;  // 更新单词的开始索引
         }
-        if (count > 3){
+        if (count > 2){
             break;
         }
     }
+    char word[4];  // 定义一个临时字符数组来存储单词
+    for (int j = start_; j < (start_+3); j++) {
+         word[j - start_] = cstr[j];
+    }
+    word[4] = '\0';  // 字符串结尾标志
+    nums[3] = atoi(word);  // 将字符串转换为整数
+    
     IPAddress ip(nums[0],nums[1],nums[2],nums[3]); 
     udp.connect(ip, serverPort);
     char _msg[50];
@@ -201,26 +208,33 @@ void get_ip_from_serial(){
         int len = req.length();
         char words[len + 1];
         req.toCharArray(words, len + 1);
-        int start = 0;
+        int start_ = 0;
         uint8_t nums[4];  // 定义一个整型数组来存储转换后的数字
         uint8_t count = 0;  // 记录数字的个数
         for (int i = 0; i < len; i++) {
-            if (words[i] == ' ') {
-                // 如果当前字符是空格，则表示单词结束
+            if (words[i] == '.') {
+                // 如果当前字符是点，则表示单词结束
                 // 将单词转换为整数并存储到数组中
-                char word[i - start + 1];  // 定义一个临时字符数组来存储单词
-                for (int j = start; j < i; j++) {
-                word[j - start] = words[j];
+                char word[i - start_ + 1];  // 定义一个临时字符数组来存储单词
+                for (int j = start_; j < i; j++) {
+                word[j - start_] = words[j];
                 }
-                word[i - start] = '\0';  // 字符串结尾标志
+                word[i - start_] = '\0';  // 字符串结尾标志
                 nums[count] = atoi(word);  // 将字符串转换为整数
                 count++;  // 更新数字个数
-                start = i + 1;  // 更新单词的开始索引
+                start_ = i + 1;  // 更新单词的开始索引
             }
-            if (count > 3){
+            if (count > 2){
                 break;
             }
         }
+        char word[4];  // 定义一个临时字符数组来存储单词
+        for (int j = start_; j < (start_+3); j++) {
+             word[j - start_] = words[j];
+        }
+        word[4] = '\0';  // 字符串结尾标志
+        nums[3] = atoi(word);  // 将字符串转换为整数
+        
         IPAddress ip(nums[0],nums[1],nums[2],nums[3]); 
         udp.connect(ip, serverPort);
         char _msg[50];
