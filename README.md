@@ -1,5 +1,5 @@
-# ESP32_CAM_UPD_SERVER
-ESP32_CAM模块，利用UPD协议实时传输图像，基于Arduino实现
+# ESP32_CAM_STREAM_TO_PYTHON
+ESP32_CAM模块，利用UPD协议实时传输图像到python客户端，基于Arduino实现
 
 
 ![image](https://user-images.githubusercontent.com/58870893/204182474-693a78bd-fac9-484c-955e-9de03c7a891d.png)
@@ -9,6 +9,7 @@ ESP32_CAM模块，利用UPD协议实时传输图像，基于Arduino实现
 - 提供了两种UPD服务的连接方案
 - 基于多线程，失去连接时界面不会卡死
 - 注释丰富，适合学习
+- 提供了将ESP32-CAM图像传输到Python中的方案，适合二次开发
 
 ## 用法
 查看窗口中的ip地址
